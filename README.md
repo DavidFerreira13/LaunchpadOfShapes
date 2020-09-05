@@ -1,6 +1,7 @@
 # AutismProject
 2019
 
+### Project description
 This project took place at Universidade de Coimbra in my Master's in Computer Engineering.
 
 ### The idea
