@@ -10,12 +10,12 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class DrawController : MonoBehaviour
 {
-    public DrawMode Mode = DrawMode.Rectangle;
+    DrawMode Mode = DrawMode.None;
 
+    public DrawShape NonePrefab;
     public DrawShape RectanglePrefab;
     public DrawShape CirclePrefab;
     public DrawShape TrianglePrefab;
-    public DrawShape NonePrefab;
     public float timeLeft = 2;
 
     // Associates a draw mode to the prefab to instantiate
@@ -37,28 +37,31 @@ public class DrawController : MonoBehaviour
         };
     }
 
-    private void Update()
+    void Update()
     {
-        var mousePos = (Vector2) Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        var mousePos = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
         var click = Input.GetKeyUp(KeyCode.Mouse0) &&
                     !EventSystem.current.IsPointerOverGameObject();
         var canUpdateShape = CurrentShapeToDraw != null && IsDrawingShape;
 
-        if (click) {
+        if (click)
+        {
             AddShapeVertex(mousePos);
-        } else if (canUpdateShape) {
+        }
+        else if (canUpdateShape)
+        {
             UpdateShapeVertex(mousePos);
         }
     }
-
     /// <summary>
     /// Adds a new vertex to the current shape at the given position, 
     /// or creates a new shape if it doesn't exist
     /// </summary>
-    private void AddShapeVertex(Vector2 position)
+    void AddShapeVertex(Vector2 position)
     {
-        if (CurrentShapeToDraw == null) {
+        if (CurrentShapeToDraw == null)
+        {
             // No current shape -> instantiate a new shape and add two vertices:
             // one for the initial position, and the other for the current cursor
             var prefab = _drawModeToPrefab[Mode];
@@ -71,14 +74,19 @@ public class DrawController : MonoBehaviour
             IsDrawingShape = true;
 
             _allShapes.Add(CurrentShapeToDraw);
-        } else {
+        }
+        else
+        {
             // Current shape exists -> add vertex if finished, 
             // otherwise start physics simulation and reset reference
             IsDrawingShape = !CurrentShapeToDraw.ShapeFinished;
 
-            if (IsDrawingShape) {
+            if (IsDrawingShape)
+            {
                 CurrentShapeToDraw.AddVertex(position);
-            } else {
+            }
+            else
+            {
                 CurrentShapeToDraw.SimulatingPhysics = true;
                 CurrentShapeToDraw = null;
             }
@@ -89,9 +97,10 @@ public class DrawController : MonoBehaviour
     /// Updates the current shape's latest vertex position to allow
     /// a shape to be updated with the mouse cursor and redrawn
     /// </summary>
-    private void UpdateShapeVertex(Vector2 position)
+    void UpdateShapeVertex(Vector2 position)
     {
-        if (CurrentShapeToDraw == null) {
+        if (CurrentShapeToDraw == null)
+        {
             return;
         }
 
@@ -101,16 +110,17 @@ public class DrawController : MonoBehaviour
     /// <summary>
     /// Controlled via Unity GUI button
     /// </summary>
-    public void SetDrawMode(string mode)
+    void SetDrawMode(string mode)
     {
-        Mode = (DrawMode) Enum.Parse(typeof(DrawMode), mode);
+        Mode = (DrawMode)Enum.Parse(typeof(DrawMode), mode);
     }
+    
 
     /// <summary>
     /// The types of shapes that can be drawn, useful for
     /// selecting shapes to draw
     /// </summary>
-    public enum DrawMode
+    private enum DrawMode
     {
         None,
         Rectangle,
